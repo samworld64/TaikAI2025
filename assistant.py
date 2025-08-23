@@ -1,4 +1,3 @@
-
 from openai import OpenAI
 from pathlib import Path
 
@@ -25,18 +24,18 @@ class HarvestIQAssistant:
             User Needs:
         """
 
-        if user_data['target'] == 'weather':
+        if user_data.get('target') == 'weather':
             prompt = f"Get the weather forecast for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole week. "
             prompt += '''\nDetails to provide:\n- location\n- temperature\n- condition\n- humidity\n- wind_speed\n- forecast\n'''
             prompt += "\nTask: Provide a detailed weather outlook for the user's area, including a weekly forecast and actionable insights for farmers."
             prompt += "\nRestrict your sources to reliable weather and agricultural resources such as https://www.weather.com/, https://www.noaa.gov/, https://www.agriculture.com/"
 
-        elif user_data['target'] == 'planting_time':
+        elif user_data.get('target') == 'planting':
             prompt = f"Get the best planting time for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole year, starting from now. "
             prompt += '''\nDetails to provide:\n- location\n- crops recommended\n- time recommended\n- weather forecast\n'''
             prompt += "\nTask: Recommend optimal planting times and crops for the user's area, based on local climate and agricultural best practices."
             prompt += "\nRestrict your sources to reliable agricultural resources such as https://www.agronomy.org/, https://www.cimmyt.org/, https://www.fao.org/"
-        elif user_data['target'] == 'prediction':
+        elif user_data.get('target') == 'prediction':
             prompt = f"Get the rain prediction for today for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. "
             prompt += '''\nDetails to provide:\n- location\n- chance_of_rain_today\n- amount_today\n- forecast_today\n- best_time_to_plant_today\n- best_time_to_avoid_today\n'''
             prompt += "\nTask: Provide today's rain prediction and actionable advice for planting and farming activities."
@@ -50,8 +49,8 @@ class HarvestIQAssistant:
     
     def create_assistant(self):
         assistant = self.client.beta.assistants.create(
-            name="Petal Health Agent",
-            instructions="You are an expert in reproductive health and personalized medical consultation. Your task is to interact with users in a sensitive and informative manner to collect detailed personal and medical information. Use this information to provide tailored advice on contraception, fertility planning, and healthcare navigation. ",
+            name="HarvestIQ Agriculture Agent",
+            instructions="You are an expert in agriculture, weather forecasting, and farming practices. Your task is to provide farmers with accurate weather forecasts, planting recommendations, and agricultural advice based on their location and needs. Focus on practical, actionable insights for farming activities.",
             tools=[{"type": "retrieval"}],
             model="gpt-5-nano",
         )
@@ -107,22 +106,6 @@ class HarvestIQAssistant:
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=messages)
         return response.choices[0].message.content
     
-    def get_clinics(self, zip_code):
-        prompt = f"Povide longitude and latitude of local clinics in the area of the zipcode of {zip_code} in python dictionary format only. Do not provide any other text. No intro text. No description. "
-        prompt += '''Here is an example for the format:  
-                    { 
-                    "clinics": [
-                        {
-                            "name": "Health Care Clinic",
-                            "lat": 37.7749,
-                            "lon": -122.4194,
-                            "services_offered": ["General Health", "Specialty Care"],
-                        }
-                    ]}
-                 '''
-        response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
-
-        return response.choices[0].message.content
     def get_weather(self, location="", longitude="", latitude=""):
         prompt = f"Get the weather forecast for location: {location} or latitude: {latitude}, longitude: {longitude} in python dictionary format only. Do not provide any other text. No intro text. No description. "
         prompt += '''Here is an example for the format:  
@@ -155,6 +138,7 @@ class HarvestIQAssistant:
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
 
         return response.choices[0].message.content
+
     def get_rain_prediction(self,location="", longitude="", latitude=""):
         # prediction for one week
         prompt = f"Get the rain prediction for location: {location} or latitude: {latitude}, longitude: {longitude} in python dictionary format only. Do not provide any other text. No intro text. No description. "
@@ -173,6 +157,7 @@ class HarvestIQAssistant:
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
 
         return response.choices[0].message.content
+
     def text_to_speech(self, text, voice):
         speech_file_path = Path("audio.mp3")
         response = self.client.audio.speech.create(

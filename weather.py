@@ -23,14 +23,14 @@ def autoplay_audio(file_path: str):
 from information import compile_user_data
 
 def display_weather(user_data=None, openai_api_key=None):
-
+    st.title("Weather Forecast")
 
     if user_data is None:
         user_data = compile_user_data()
     ## this will be changed based on the page we are
     user_data['target'] = 'weather'
     if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
+        st.info("Please add your OpenAI API key to continue. And then fill the questionnaire if you haven't done so.")
         st.stop()
 
     if 'information_updated' not in st.session_state:

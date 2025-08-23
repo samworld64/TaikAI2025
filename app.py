@@ -1,10 +1,12 @@
 import streamlit as st
-from information import questionnaire
+from information import questionnaire, compile_user_data
 from response import display_response
 from weather import display_weather
-from figma import figma_welcome, figma_profile
-from clinics import clinics
 from streamlit_card import card
+from alert import display_alert
+from planting import display_planting
+from prediction import display_prediction
+from help import display_help
 
 app_mode = "Welcome"
 
@@ -38,9 +40,13 @@ def main():
         st.button("Home", on_click=lambda: setattr(st.session_state, 'current_page', 'welcome'))
         st.button("Information", on_click=lambda: setattr(st.session_state, 'current_page', 'questions'))
         st.button("Weather", on_click=lambda: setattr(st.session_state, 'current_page', 'weather'))
-        st.button("Planting Time", on_click=lambda: setattr(st.session_state, 'current_page', 'planting_time'))
+        st.button("Planting Time", on_click=lambda: setattr(st.session_state, 'current_page', 'planting'))
         st.button("Prediction", on_click=lambda: setattr(st.session_state, 'current_page', 'prediction'))
+        st.button("Peste Alert", on_click=lambda: setattr(st.session_state, 'current_page', 'alert'))
         st.button("Help", on_click=lambda: setattr(st.session_state, 'current_page', 'help'))
+        # st.button("Figma Welcome", on_click=lambda: setattr(st.session_state, 'current_page', 'figma_welcome'))
+        # st.button("Figma Profile", on_click=lambda: setattr(st.session_state, 'current_page', 'figma_profile'))
+        # st.button("Clinics", on_click=lambda: setattr(st.session_state, 'current_page', 'clinics'))
 
         openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
         st.markdown("[Get an OpenAI API key](https://platform.openai.com/account/api-keys)")
@@ -56,19 +62,47 @@ def main():
         welcome_page()
     elif st.session_state['current_page'] == 'questions':
         questionnaire()
-    # elif st.session_state['current_page'] == 'chat':
-    #     display_response(openai_api_key=openai_api_key)
+    elif st.session_state['current_page'] == 'chat':
+        display_response(openai_api_key=openai_api_key)
+   
     elif st.session_state['current_page'] == 'weather':
-        display_weather(openai_api_key=openai_api_key)
-    elif st.session_state['current_page'] == 'planting_time':
-        display_weather(openai_api_key=openai_api_key)
+         user_data = compile_user_data()  # This gets all the info from the questionnaire
+         display_weather(user_data=user_data, openai_api_key=st.session_state.openai_api_key)
+    
+    elif st.session_state['current_page'] == 'alert':
+        user_data = compile_user_data()
+        display_alert(openai_api_key=openai_api_key)
+    elif st.session_state['current_page'] == 'help':
+            user_data = compile_user_data()  # This gets all the info from the questionnaire
+            display_help(user_data=user_data, openai_api_key=st.session_state.openai_api_key)
+
+    elif st.session_state['current_page'] == 'planting':
+        user_data = compile_user_data()
+        display_planting(openai_api_key=openai_api_key)
     elif st.session_state['current_page'] == 'prediction':
-        display_weather(openai_api_key=openai_api_key)
-    elif st.session_state['current_page'] == 'clinics':
-        clinics()
+        user_data = compile_user_data()
+        display_prediction(openai_api_key=openai_api_key)
+    # elif st.session_state['current_page'] == 'figma_welcome':
+    #     figma_welcome()
+    # elif st.session_state['current_page'] == 'figma_profile':
+    #     figma_profile()
+    # elif st.session_state['current_page'] == 'clinics':
+    #     clinics()
+        
+def figma_welcome():
+    st.title("Figma Welcome Page")
+    st.write("Welcome to the Figma section! Here you can find various resources and tools related to Figma.")
+
+def figma_profile():
+    st.title("Figma Profile Page")
+    st.write("This is your Figma profile. You can manage your designs and projects here.")
+
+def clinics():
+    st.title("Clinics Page")
+    st.write("Welcome to the Clinics section! Here you can find information about various clinics.")
 
 def welcome_page():
-    # st.title("Welcome to PetalHealth!")
+    st.title("Welcome to HarvestIQ")
 
     #st.image("asset/harvest_cover.png")
     st.image("asset/homebg.png")
@@ -100,7 +134,7 @@ def welcome_page():
                         "font-size": "1.4em"
                     },
                     "filter": {
-                        "background-color": "#a8eb12",  # <- make the image not dimmed anymore  
+                        "background-color": "#1b0ceb",  # <- make the image not dimmed anymore  
                         "background-image": "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)"
                     }
             }

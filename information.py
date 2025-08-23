@@ -2,6 +2,8 @@ import streamlit as st
 from st_audiorec import st_audiorec
 from assistant import HarvestIQAssistant
 import datetime
+from streamlit_folium import st_folium
+import folium
 
 def collect_personal_info():
     # Personal Information
@@ -21,9 +23,34 @@ def collect_address_location():
     navigate()
 
 
+def questionnaire():
+    st.write("Select your location on the map:")
+
+    # Center map on Africa by default
+    m = folium.Map(location=[0, 20], zoom_start=3)
+    marker = folium.Marker(location=[0, 20], draggable=True)
+    marker.add_to(m)
+
+    # Display the map and let user move the marker
+    output = st_folium(m, width=700, height=400)
+
+    # Get coordinates from the marker
+    if output and output.get("last_clicked"):
+        lat = output["last_clicked"]["lat"]
+        lon = output["last_clicked"]["lng"]
+        st.success(f"Selected Latitude: {lat}, Longitude: {lon}")
+    else:
+        st.info("Click on the map to select your location.")
+    st.session_state.latitude = lat if output and output.get("last_clicked") else ""
+    st.session_state.longitude = lon if output and output.get("last_clicked") else ""
+
+
+
+
+
 def privacy_consent():
     # Feedback and Consent
-    st.radio("Do you consent to have this information used to tailor health advice specifically for you?", ["No", "Yes"], key="consent")
+    st.radio("Do you consent to having your location data used to provide you with a personalized weather forecast?", ["No", "Yes"], key="consent")
 
     def prev():
         if st.session_state.page_number > 0:
@@ -50,7 +77,7 @@ questionnaire_pages = [
 ]
 
 def questionnaire():
-
+    st.title("User Information & Questionnaire")
     if 'page_number' not in st.session_state:
         st.session_state.page_number = 0
 

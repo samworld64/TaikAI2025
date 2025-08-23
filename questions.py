@@ -116,7 +116,7 @@ def collect_other_info():
 
 def privacy_concent():
     # Feedback and Consent
-    st.radio("Do you consent to have this information used to tailor health advice specifically for you?", ["No", "Yes"], key="consent")
+    st.radio("Do you consent to having your location data used to provide you with a personalized weather forecast?", ["No", "Yes"], key="consent")
 
     def prev():
         if st.session_state.page_number > 0:
