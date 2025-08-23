@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HarvestIQ logo">
+  <defs>
+    <style>
+      .bg { fill: #f26a21; } /* bright orange */
+      .mark { fill: #ffffff; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; font-weight: 800; }
+    </style>
+  </defs>
+  <!-- Circular background -->
+  <circle class="bg" cx="256" cy="256" r="240"/>
+  <!-- White 'w' letterform -->
+  <text class="mark" x="50%" y="57%" font-size="300" text-anchor="middle" dominant-baseline="middle">w</text>
+</svg>

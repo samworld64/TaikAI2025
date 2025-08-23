@@ -14,7 +14,7 @@ def main():
     # Set page config for wide mode
     st.set_page_config(
         page_title="HarvestIQ",
-        page_icon="/asset/icon.svg",
+        page_icon="asset/harvestiq-logo.svg",
         menu_items={
             "About": "HarvestIQ is an AI-powered smart agriculture advisor designed to support farmers in the entire world specially in africa. By combining local farming knowledge with cutting-edge AI, HarvestIQ delivers accurate weather forecasts, rain predictions, and personalized crop planting recommendations. Our mission is to bridge technology and tradition, helping farmers boost productivity, reduce risks, and make data-driven decisions while honoring cultural farming practices.",
             "Get help": None,
@@ -70,7 +70,8 @@ def main():
 def welcome_page():
     # st.title("Welcome to PetalHealth!")
 
-    st.image("asset/harvest_cover.png")
+    #st.image("asset/harvest_cover.png")
+    st.image("asset/homebg.png")
 
     def create_card(title, text, is_active=False):
         return card(
@@ -82,8 +83,8 @@ def welcome_page():
                     "width": "100%",
                     "filter": "drop-shadow(0px 23px 12px rgba(0,0,0,0.10000000149011612))",
                     "border-radius":"20px",
-                    "margin": "20px",
-                    "padding":"20px",
+                    "margin": "0.1px",
+                    "padding":"0.1px",
                     "display":"flex",
                     "flex-direction":"column",
             #         "gap":"30px",
@@ -91,7 +92,8 @@ def welcome_page():
                     "outline": "blue" if is_active else "none"
                     },
                     "text": {
-                        "color": "#555"
+                        "color": "#555",
+                        "font-size": "0.7em"  # Change to "0.95em" or "14px" if needed
                     },
                     "title": {
                         "color": "#333",
