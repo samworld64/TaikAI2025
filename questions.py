@@ -1,6 +1,6 @@
 import streamlit as st
 from st_audiorec import st_audiorec
-from assistant import PetalAssitant
+from assistant import HarvestIQAssistant
 import datetime
 
 def collect_user_needs():
@@ -19,7 +19,7 @@ def collect_user_needs():
         # st.audio(wav_audio_data, format='audio/wav')
         file_name = save_audio_file(wav_audio_data, "mp3")
 
-        assistant = assistant = PetalAssitant(openai_api_key)
+        assistant = assistant = HarvestIQAssistant(openai_api_key)
         transcription = assistant.transcribe(file_name)
         
         st.text_area("Feel free to edit the transcription: ", value=transcription, key="user_needs")
@@ -107,7 +107,7 @@ def collect_other_info():
         # st.audio(wav_audio_data, format='audio/wav')
         file_name = save_audio_file(wav_audio_data, "mp3")
 
-        assistant = assistant = PetalAssitant(openai_api_key)
+        assistant = assistant = HarvestIQAssistant(openai_api_key)
         transcription = assistant.transcribe(file_name)
         
         st.text_area("Feel free to edit the transcription: ", value=transcription, key="user_more_info")
@@ -123,7 +123,7 @@ def privacy_concent():
             st.session_state.page_number -= 1
     def finish():
         user_data = compile_user_data()
-        st.session_state['profile_updated'] = True
+        st.session_state['information_updated'] = True
         st.success("Profile Submitted Successfully!")
         # st.info(user_data)
         st.session_state['current_page'] = 'chat'

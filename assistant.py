@@ -3,7 +3,7 @@ from openai import OpenAI
 from pathlib import Path
 
 
-class PetalAssitant:
+class HarvestIQAssistant:
 
     def __init__(self, api_key) -> None:
         self.api_key = api_key
@@ -15,67 +15,32 @@ class PetalAssitant:
 
         # Constructing a detailed prompt based on the comprehensive user data collected
         prompt = f"""
-        User Profile:
-        - Age: {user_data['age']}
-        - Gender: {user_data['gender']}
-        - General Health: {user_data['health_status']}
-        - Location: {user_data['location']}
-        - Employment Status: {user_data['employment_status']}
-        - Insurance Provider: {user_data.get('insurance_provider', 'Not insured')}
-        
-        User Needs:
+            User Profile:
+            - Age: {user_data.get('age', '')}
+            - Gender: {user_data.get('gender', '')}
+            - Location: {user_data.get('location', '')}
+            - Latitude: {user_data.get('latitude', '')}
+            - Longitude: {user_data.get('longitude', '')}
+
+            User Needs:
         """
 
-        if user_data['current_medications'] == 'Yes' and user_data.get('medication_types'):
-            prompt += f"- Current Medications: {user_data['medication_types']}\n"
-        else:
-            prompt += "- Current Medications: No\n"
+        if user_data['target'] == 'weather':
+            prompt = f"Get the weather forecast for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole week. "
+            prompt += '''\nDetails to provide:\n- location\n- temperature\n- condition\n- humidity\n- wind_speed\n- forecast\n'''
+            prompt += "\nTask: Provide a detailed weather outlook for the user's area, including a weekly forecast and actionable insights for farmers."
+            prompt += "\nRestrict your sources to reliable weather and agricultural resources such as https://www.weather.com/, https://www.noaa.gov/, https://www.agriculture.com/"
 
-        if user_data.get('allergies_list'):
-            prompt += f"- Known Allergies: {user_data['allergies_list']}\n"
-        else:
-            prompt += "- Known Allergies: None\n"
-
-        if user_data.get('known_conditions_list'):
-            prompt += f"- Reproductive Health Conditions: {user_data['known_conditions_list']}\n"
-        else:
-            prompt += "- Reproductive Health Conditions: None\n"
-
-        prompt += "\n1. Contraception Advice:\n"
-        if user_data['current_contraception'] == 'Yes':
-            prompt += f"   - Current Contraception: {user_data.get('current_contraception_types', 'Not specified')}\n"
-        else:
-            prompt += "   - Current Contraception: No\n"
-
-        if user_data['past_contraception'] == 'Yes':
-            prompt += f"   - Past Contraception Use: {user_data.get('past_contraception_types', 'Not specified')}\n"
-        else:
-            prompt += "   - Past Contraception Use: No\n"
-
-        prompt += f"   - Priorities for Contraception: {user_data.get('contraception_priority', 'Not specified')}\n"
-        prompt += "\n2. Fertility Planning:\n"
-        prompt += f"   - Considering Expanding Family: {user_data.get('planning_family', 'No')}\n"
-        prompt += f"   - Planned Conception Timeline: {user_data.get('conception_plan', 'Not specified')}\n"
-        prompt += f"   - Fertility Concerns: {user_data.get('fertility_concerns', 'None specified')}\n"
-
-        if user_data['family_history'] == 'Yes':
-            prompt += f"   - Family Fertility History: {user_data.get('family_history_details', 'No issues reported')}\n"
-        else:
-            prompt += "   - Family Fertility History: No issues reported\n"
-
-        prompt += "\n3. Insurance and Clinic Navigation:\n"
-        prompt += f"   - Needs Clinic Assistance: {user_data.get('need_assistance', 'No')}\n"
-
-        prompt += "\n4. Cultural and Ethical Considerations:\n"
-        prompt += f"   - Cultural or Ethical Concerns: {user_data.get('cultural_concerns', 'None specified')}\n"
-
-        prompt += f"\nTask:\n"
-        prompt += "- Provide detailed advice on suitable contraception options considering the user's health, current medication, past experiences, and priorities.\n"
-        prompt += "- Offer guidance on fertility planning considering the user's timeline, concerns, and family history.\n"
-        prompt += "- Suggest local clinics that accept the user's insurance and offer required services, considering any cultural or ethical preferences.\n"
-        prompt += "- Include personalized learning resources based on the user's preferred learning method: {user_data.get('learning_preferences', 'No preference')}.\n"
-
-        prompt += "Restrict your sources to reliable sources such as https://www.statpearls.com/, https://data.medicaid.gov/, and https://usafacts.org/"
+        elif user_data['target'] == 'planting_time':
+            prompt = f"Get the best planting time for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole year, starting from now. "
+            prompt += '''\nDetails to provide:\n- location\n- crops recommended\n- time recommended\n- weather forecast\n'''
+            prompt += "\nTask: Recommend optimal planting times and crops for the user's area, based on local climate and agricultural best practices."
+            prompt += "\nRestrict your sources to reliable agricultural resources such as https://www.agronomy.org/, https://www.cimmyt.org/, https://www.fao.org/"
+        elif user_data['target'] == 'prediction':
+            prompt = f"Get the rain prediction for today for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. "
+            prompt += '''\nDetails to provide:\n- location\n- chance_of_rain_today\n- amount_today\n- forecast_today\n- best_time_to_plant_today\n- best_time_to_avoid_today\n'''
+            prompt += "\nTask: Provide today's rain prediction and actionable advice for planting and farming activities."
+            prompt += "\nRestrict your sources to reliable meteorological and farming resources such as https://www.weather.gov/, https://www.climate.gov/, https://www.agweb.com/"
 
         return prompt
 
@@ -95,51 +60,51 @@ class PetalAssitant:
 
 
     def generate_response(self, user_data, api_key):
-
         prompt = self.create_openai_assistant_prompt(user_data)
-
-        response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
-        
-        return response.choices[0].message.content
-        
-        message = self.client.beta.threads.messages.create(
-            thread_id=self.thread.id,
-            role="assistant",
-            content=prompt
-        )
-        run = self.client.beta.threads.runs.create_and_poll(
-            thread_id=self.thread.id,
-            assistant_id=self.assistant.id,
-            instructions=prompt
-        )
-
-        if run.status == 'completed': 
-            messages = self.client.beta.threads.messages.list(
-                thread_id=self.thread.id
-            )
-            
-            return messages.data[0].content[0].text.value
+        try:
+            response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
+            return response.choices[0].message.content
+        except Exception as e:
+            import streamlit as st
+            # Try to extract 'input' from error response
+            input_msg = None
+            try:
+                # If error is from openai.BadRequestError, it may have a response attribute
+                if hasattr(e, 'response') and e.response is not None:
+                    error_json = e.response.json()
+                    input_msg = error_json.get('error', {}).get('message', '')
+                    # Try to extract 'input' from the message string if present
+                    import re, json
+                    match = re.search(r"'input': '([^']+)'", input_msg)
+                    if match:
+                        input_msg = match.group(1)
+                    else:
+                        # Try to parse message as JSON list and extract 'input'
+                        try:
+                            msg_list = json.loads(input_msg.replace("'", '"'))
+                            if isinstance(msg_list, list) and 'input' in msg_list[0]:
+                                input_msg = msg_list[0]['input']
+                        except Exception:
+                            pass
+                else:
+                    # Fallback: try to extract 'input' from string
+                    import re
+                    match = re.search(r"'input': '([^']+)'", str(e))
+                    if match:
+                        input_msg = match.group(1)
+            except Exception:
+                input_msg = None
+            if input_msg:
+                st.error(input_msg)
+                return input_msg
+            else:
+                st.error(f"OpenAI Error: {str(e)}")
+                return f"Error: {str(e)}"
 
             
     
     def chat(self, messages):
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=messages)
-        # message = self.client.beta.threads.messages.create(
-        #     thread_id=self.thread.id,
-        #     role="user",
-        #     content=messages[0]['content'],
-        # )
-
-        # run = self.client.beta.threads.runs.create(
-        #     thread_id=self.thread.id,
-        #     assistant_id=self.assistant.id,
-        # )
-        # if run.status == 'completed': 
-        #     messages = self.client.beta.threads.messages.list(
-        #         thread_id=self.thread.id, order="asc", after=message.id
-        #     )
-
-        #     return messages.data[0].content[0].text.value
         return response.choices[0].message.content
     
     def get_clinics(self, zip_code):
@@ -158,9 +123,8 @@ class PetalAssitant:
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
 
         return response.choices[0].message.content
-    # TODO: Implement get Weather
-    def get_weather(self, location):
-        prompt = f"Get the weather forecast for {location} in python dictionary format only. Do not provide any other text. No intro text. No description. "
+    def get_weather(self, location="", longitude="", latitude=""):
+        prompt = f"Get the weather forecast for location: {location} or latitude: {latitude}, longitude: {longitude} in python dictionary format only. Do not provide any other text. No intro text. No description. "
         prompt += '''Here is an example for the format:  
                     { 
                     "weather": {
@@ -177,15 +141,32 @@ class PetalAssitant:
 
         return response.choices[0].message.content
 
-    # TODO: Implement best planting time
-    def get_planting_time(self, location):
-        prompt = f"Get the best planting time for {location} in python dictionary format only. Do not provide any other text. No intro text. No description. "
+    def get_planting_time(self, location="", longitude="", latitude=""):
+        prompt = f"Get the best planting time for location: {location} or latitude: {latitude}, longitude: {longitude} in python dictionary format only. Do not provide any other text. No intro text. No description. "
         prompt += '''Here is an example for the format:  
                     { 
                     "planting_time": {
                         "location": "New York",
                         "time": "Spring",
                         "crops": ["Tomatoes", "Peppers", "Eggplants"]
+                    }
+                }
+                 '''
+        response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
+
+        return response.choices[0].message.content
+    def get_rain_prediction(self,location="", longitude="", latitude=""):
+        # prediction for one week
+        prompt = f"Get the rain prediction for location: {location} or latitude: {latitude}, longitude: {longitude} in python dictionary format only. Do not provide any other text. No intro text. No description. "
+        prompt += '''Here is an example for the format:  
+                    { 
+                    "rain_prediction": {
+                        "location": "New York",
+                        "chance_of_rain": 80,
+                        "amount": "10mm",
+                        "forecast": ["Rain", "Thunderstorms"],
+                        "best_days_to_plant": ["Saturday", "Sunday"],
+                        "best_days_to_avoid": ["Monday", "Tuesday"]
                     }
                 }
                  '''

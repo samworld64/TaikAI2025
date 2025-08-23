@@ -1,6 +1,7 @@
 import streamlit as st
-from questions import questionnaire
+from information import questionnaire
 from response import display_response
+from weather import display_weather
 from figma import figma_welcome, figma_profile
 from clinics import clinics
 from streamlit_card import card
@@ -35,6 +36,7 @@ def main():
         st.image("asset/petal-logo-w.png")
         st.markdown("## Navigation")
         st.button("Home", on_click=lambda: setattr(st.session_state, 'current_page', 'welcome'))
+        st.button("Information", on_click=lambda: setattr(st.session_state, 'current_page', 'questions'))
         st.button("Weather", on_click=lambda: setattr(st.session_state, 'current_page', 'weather'))
         st.button("Planting Time", on_click=lambda: setattr(st.session_state, 'current_page', 'planting_time'))
         st.button("Prediction", on_click=lambda: setattr(st.session_state, 'current_page', 'prediction'))
@@ -43,15 +45,6 @@ def main():
         openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
         st.markdown("[Get an OpenAI API key](https://platform.openai.com/account/api-keys)")
 
-    # if app_mode == "Welcome":
-    #     st.session_state.current_page = 'welcome'
-    # elif app_mode == "Fill Questionnaire":
-    #     st.session_state.current_page = 'questions'
-    # elif app_mode == "Chat":
-    #     st.session_state.current_page = 'chat'
-    # elif app_mode == "Figma":
-    #     st.session_state.current_page = 'figma'
-    
     # set openai key
     st.session_state.openai_api_key = openai_api_key
 
@@ -63,15 +56,21 @@ def main():
         welcome_page()
     elif st.session_state['current_page'] == 'questions':
         questionnaire()
-    elif st.session_state['current_page'] == 'chat':
-        display_response(openai_api_key=openai_api_key)
+    # elif st.session_state['current_page'] == 'chat':
+    #     display_response(openai_api_key=openai_api_key)
+    elif st.session_state['current_page'] == 'weather':
+        display_weather(openai_api_key=openai_api_key)
+    elif st.session_state['current_page'] == 'planting_time':
+        display_weather(openai_api_key=openai_api_key)
+    elif st.session_state['current_page'] == 'prediction':
+        display_weather(openai_api_key=openai_api_key)
     elif st.session_state['current_page'] == 'clinics':
         clinics()
 
 def welcome_page():
     # st.title("Welcome to PetalHealth!")
 
-    st.image("asset/hi_cover.jpeg")
+    st.image("asset/harvest_cover.png")
 
     def create_card(title, text, is_active=False):
         return card(
@@ -81,8 +80,6 @@ def welcome_page():
             # image="http://placekitten.com/300/250",
             styles={ "card": {
                     "width": "100%",
-            #         "background-color":"#ffffff",
-                    # "height": "100px",
                     "filter": "drop-shadow(0px 23px 12px rgba(0,0,0,0.10000000149011612))",
                     "border-radius":"20px",
                     "margin": "20px",
@@ -108,32 +105,16 @@ def welcome_page():
 
         )
 
-
-    # st.header("Greetings")
-    # st.write("Welcome to PetalHealth! We're excited to guide you through your personalized reproductive health journey. Our platform is designed to offer you tailored advice, clear information, and support that respects your unique needs and privacy. Get started today and take the first step towards informed and empowered health decisions. Thank you for trusting PetalHealth—where your health and privacy come first.")
-
-    # st.header("Privacy")
-    # st.info("At PetalHealth, your privacy is our top priority. To protect your personal information, our system only uses state-of-the-art security measures and adheres to the strictest data protection standards. We employ advanced encryption technologies to secure all data transmissions and store information in compliance with leading privacy laws, including HIPAA. Our platform is designed to ensure that your personal details are accessed only by authorized personnel and only for the purpose of enhancing your experience and providing the services you need.", icon="🔒")
-
-    # st.header("Get Started")
-    # st.success("Ready to explore your personalized reproductive health options? Click 'Get Started' to begin a journey tailored just for you. You’ll answer some simple questions to help us understand your needs and preferences. From there, we’ll provide you with customized advice and resources to make informed decisions about your health. Let’s take this step together—your empowered path starts now.", icon="🏃")
-
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        # st.markdown("#### Reproductive Health Education")
-        # st.write("We provide the most accurate reproductive health information in an easy learning environment suited to different people's needs.")
-        create_card("Reproductive Health Education", "We provide the most accurate reproductive health information in an easy learning environment suited to different people's needs")
+        create_card("Weather Outlook", "HarvestIQ provides farmers with accurate, real-time weather forecasts tailored to their specific locations. This feature analyzes meteorological data to deliver insights on temperature, humidity, wind patterns, and potential weather events, helping farmers make informed decisions about their daily activities.")
 
     with col2:
-        # st.markdown("#### Shared Decision-Making")
-        # st.write("We help you navigate important conversations through the lens of shared decision-making.")
-        create_card("Shared Decision-Making", "We help you navigate important conversations through the lens of shared decision-making, integrating diverse perspectives for inclusive outcomes.")
+        create_card("Best Planting Times", "HarvestIQ analyzes historical weather data to recommend the best planting times for various crops, helping farmers optimize their planting schedules and improve yields.")
 
     with col3:
-        # st.markdown("#### Personalized Recommendations")
-        # st.write("Based on your profile, we can provide personalized and precision reproductive health recommendations.")
-        create_card("Personalized Recommendations", "Based on your unique profile, we can provide personalized and precision reproductive health recommendation, finely tuned to meet your needs.")
+        create_card("Rain Prediction", "With advanced algorithms, HarvestIQ offers reliable rain predictions, alerting farmers to upcoming rainfall events. This feature enables proactive planning for irrigation, soil management, and harvesting activities, reducing risks associated with unexpected weather changes and enhancing overall productivity.")
     
         st.button("Get Started", on_click=lambda: setattr(st.session_state, 'current_page', 'questions'))
         

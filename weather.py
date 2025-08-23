@@ -4,15 +4,6 @@ from assistant import HarvestIQAssistant
 
 import base64
 
-# def text_to_speech(response):
-#     tts = gTTS(text=response, lang='en', slow=False)
-#     audio_buffer = BytesIO()
-#     tts.write_to_fp(audio_buffer)
-#     audio_buffer.seek(0)
-#     return audio_buffer
-
-
-
 def autoplay_audio(file_path: str):
     with open(file_path, "rb") as f:
         data = f.read()
@@ -29,39 +20,25 @@ def autoplay_audio(file_path: str):
 
 
 # from assistant import generate_response
-from questions import compile_user_data
+from information import compile_user_data
 
-def display_response(user_data=None, openai_api_key=None):
+def display_weather(user_data=None, openai_api_key=None):
 
 
     if user_data is None:
         user_data = compile_user_data()
-    
+    ## this will be changed based on the page we are
+    user_data['target'] = 'weather'
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
 
     if 'information_updated' not in st.session_state:
-        st.info("Please update your profile first to continue.")
+        st.info("Please update your information first to continue.")
         st.stop()
 
-    with st.sidebar:
-        st.header("Feedback on Advice")
-        st.write("Please help us improve our advice by providing your feedback.")
-
-        # User feedback collection
-        feedback = st.text_area("Your feedback:", help="Describe what you found useful or not useful in the advice provided.")
-        feedback_submitted = st.button("Submit Feedback")
-
-        if feedback_submitted:
-            st.success("Thank you for your feedback!")
-            # Here you would typically send the feedback to a database or a file system for analysis
-            save_feedback(user_data, feedback)
-        
-
-    st.title("💬 Your Personalized Advice")
-    st.caption("🚀 PetalHealth Chatbot powered by OpenAI LLM")
-    # Assuming generate_advice is a function that sends data to OpenAI and gets a response
+    st.title("💬 Weather outlook on your area")
+    st.caption("🚀 HarvestIQ Chatbot powered by OpenAI LLM")
     assistant = HarvestIQAssistant(openai_api_key)
     response = assistant.generate_response(user_data, openai_api_key)
 
@@ -91,8 +68,3 @@ def display_response(user_data=None, openai_api_key=None):
         
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
-
-def save_feedback(user_data, feedback):
-    # Placeholder for saving feedback
-    # In practice, this should save the feedback to a database or send it to an analytics server
-    pass
