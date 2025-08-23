@@ -158,7 +158,40 @@ class PetalAssitant:
         response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
 
         return response.choices[0].message.content
+    # TODO: Implement get Weather
+    def get_weather(self, location):
+        prompt = f"Get the weather forecast for {location} in python dictionary format only. Do not provide any other text. No intro text. No description. "
+        prompt += '''Here is an example for the format:  
+                    { 
+                    "weather": {
+                        "location": "New York",
+                        "temperature": 75,
+                        "condition": "Sunny",
+                        "humidity": 50,
+                        "wind_speed": 10,
+                        "forecast": ["Sunny", "Cloudy", "Rainy"]
+                    }
+                }
+                 '''
+        response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
 
+        return response.choices[0].message.content
+
+    # TODO: Implement best planting time
+    def get_planting_time(self, location):
+        prompt = f"Get the best planting time for {location} in python dictionary format only. Do not provide any other text. No intro text. No description. "
+        prompt += '''Here is an example for the format:  
+                    { 
+                    "planting_time": {
+                        "location": "New York",
+                        "time": "Spring",
+                        "crops": ["Tomatoes", "Peppers", "Eggplants"]
+                    }
+                }
+                 '''
+        response = self.client.chat.completions.create(model="gpt-5-nano", messages=[{"role": "assistant", "content": prompt}])
+
+        return response.choices[0].message.content
     def text_to_speech(self, text, voice):
         speech_file_path = Path("audio.mp3")
         response = self.client.audio.speech.create(

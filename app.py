@@ -12,10 +12,10 @@ app_mode = "Welcome"
 def main():
     # Set page config for wide mode
     st.set_page_config(
-        page_title="PetalHealth",
-        page_icon="https://www.svgrepo.com/show/287894/care.svg",
+        page_title="HarvestIQ",
+        page_icon="/asset/icon.svg",
         menu_items={
-            "About": "Welcome to PetalHealth, a revolutionary AI-assisted reproductive health resource center designed to empower you with personalized, comprehensive information that respects and responds to your unique reproductive health needs.",
+            "About": "HarvestIQ is an AI-powered smart agriculture advisor designed to support farmers in the entire world specially in africa. By combining local farming knowledge with cutting-edge AI, HarvestIQ delivers accurate weather forecasts, rain predictions, and personalized crop planting recommendations. Our mission is to bridge technology and tradition, helping farmers boost productivity, reduce risks, and make data-driven decisions while honoring cultural farming practices.",
             "Get help": None,
             "Report a Bug": None
         },
@@ -35,9 +35,9 @@ def main():
         st.image("asset/petal-logo-w.png")
         st.markdown("## Navigation")
         st.button("Home", on_click=lambda: setattr(st.session_state, 'current_page', 'welcome'))
-        st.button("Profile", on_click=lambda: setattr(st.session_state, 'current_page', 'questions'))
-        st.button("Personalized Advice", on_click=lambda: setattr(st.session_state, 'current_page', 'chat'))
-        st.button("Clinics", on_click=lambda: setattr(st.session_state, 'current_page', 'clinics'))
+        st.button("Weather", on_click=lambda: setattr(st.session_state, 'current_page', 'weather'))
+        st.button("Planting Time", on_click=lambda: setattr(st.session_state, 'current_page', 'planting_time'))
+        st.button("Prediction", on_click=lambda: setattr(st.session_state, 'current_page', 'prediction'))
         st.button("Help", on_click=lambda: setattr(st.session_state, 'current_page', 'help'))
 
         openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
@@ -71,7 +71,7 @@ def main():
 def welcome_page():
     # st.title("Welcome to PetalHealth!")
 
-    st.image("asset/petal_cover.png")
+    st.image("asset/hi_cover.jpeg")
 
     def create_card(title, text, is_active=False):
         return card(
