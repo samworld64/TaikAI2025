@@ -12,18 +12,18 @@ def collect_personal_info():
 
 def collect_address_location():
     # Address and Location
-    st.text_input("What is your current address?", key="address")
+    st.text_input("What is your current address? (Optional)", key="address")
     st.text_input("What is your city name?", key="city")
     st.text_input("What is your country name?", key="country")
-    st.text_input("What is your latitude?", key="latitude")
-    st.text_input("What is your longitude?", key="longitude")
+    st.text_input("What is your latitude? (Optional)", key="latitude")
+    st.text_input("What is your longitude? (Optional)", key="longitude")
 
     navigate()
 
 
 def privacy_consent():
     # Feedback and Consent
-    st.radio("Do you consent to have this information used to tailor health advice specifically for you?", ["No", "Yes"], key="consent")
+    st.radio("Do you consent to have this information used to tailor agricultural advice specifically for you?", ["No", "Yes"], key="consent")
 
     def prev():
         if st.session_state.page_number > 0:
@@ -93,13 +93,24 @@ def compile_user_data():
     
     # Prefer returning the latest questionnaire data from session_state
     if 'information_data' in st.session_state:
-        return st.session_state['information_data']
+        user_data = st.session_state['information_data']
+        
+        # Ensure location is properly formatted from available data
+        if 'location' not in user_data or not user_data['location']:
+            address = user_data.get('address', '').strip()
+            city = user_data.get('city', '').strip()
+            country = user_data.get('country', '').strip()
+            location_parts = [part for part in [address, city, country] if part]
+            user_data['location'] = ', '.join(location_parts) if location_parts else 'Not specified'
+        
+        return user_data
     else:
+        # Fallback: gather data from individual session state keys
         address = st.session_state.get('address', '').strip()
         city = st.session_state.get('city', '').strip()
         country = st.session_state.get('country', '').strip()
         location_parts = [part for part in [address, city, country] if part]
-        location = ', '.join(location_parts) if location_parts else ''
+        location = ', '.join(location_parts) if location_parts else 'Not specified'
 
         user_data = {
             'age': st.session_state.get('age', 'Not specified'),
@@ -108,6 +119,6 @@ def compile_user_data():
             'latitude': st.session_state.get('latitude', 'Not specified'),
             'longitude': st.session_state.get('longitude', 'Not specified'),
             'consent': st.session_state.get('consent', 'No'),
-            'target': 'weather'
+            'target': st.session_state.get('target', 'weather')  # Use target from session state or default to weather
         }
         return user_data

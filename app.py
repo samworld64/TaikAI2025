@@ -2,8 +2,6 @@ import streamlit as st
 from information import questionnaire
 from response import display_response
 from weather import display_weather
-from figma import figma_welcome, figma_profile
-from clinics import clinics
 from streamlit_card import card
 
 app_mode = "Welcome"
@@ -16,7 +14,7 @@ def main():
         page_title="HarvestIQ",
         page_icon="/asset/icon.svg",
         menu_items={
-            "About": "HarvestIQ is an AI-powered smart agriculture advisor designed to support farmers in the entire world specially in africa. By combining local farming knowledge with cutting-edge AI, HarvestIQ delivers accurate weather forecasts, rain predictions, and personalized crop planting recommendations. Our mission is to bridge technology and tradition, helping farmers boost productivity, reduce risks, and make data-driven decisions while honoring cultural farming practices.",
+            "About": "HarvestIQ is an AI-powered smart agriculture advisor designed to support farmers worldwide, especially in Africa. By combining local farming knowledge with cutting-edge AI, HarvestIQ delivers accurate weather forecasts, rain predictions, and personalized crop planting recommendations. Our mission is to bridge technology and tradition, helping farmers boost productivity, reduce risks, and make data-driven decisions while honoring cultural farming practices.",
             "Get help": None,
             "Report a Bug": None
         },
@@ -59,16 +57,13 @@ def main():
     # elif st.session_state['current_page'] == 'chat':
     #     display_response(openai_api_key=openai_api_key)
     elif st.session_state['current_page'] == 'weather':
-        display_weather(openai_api_key=openai_api_key)
+        display_weather(openai_api_key=openai_api_key, target='weather')
     elif st.session_state['current_page'] == 'planting_time':
-        display_weather(openai_api_key=openai_api_key)
+        display_weather(openai_api_key=openai_api_key, target='planting_time')
     elif st.session_state['current_page'] == 'prediction':
-        display_weather(openai_api_key=openai_api_key)
-    elif st.session_state['current_page'] == 'clinics':
-        clinics()
+        display_weather(openai_api_key=openai_api_key, target='prediction')
 
 def welcome_page():
-    # st.title("Welcome to PetalHealth!")
 
     st.image("asset/harvest_cover.png")
 

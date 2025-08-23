@@ -22,13 +22,14 @@ def autoplay_audio(file_path: str):
 # from assistant import generate_response
 from information import compile_user_data
 
-def display_weather(user_data=None, openai_api_key=None):
+def display_weather(user_data=None, openai_api_key=None, target='weather'):
 
 
     if user_data is None:
         user_data = compile_user_data()
-    ## this will be changed based on the page we are
-    user_data['target'] = 'weather'
+    # Set the target in session state and user data
+    st.session_state['target'] = target
+    user_data['target'] = target
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
