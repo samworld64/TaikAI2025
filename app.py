@@ -41,7 +41,7 @@ def main():
         st.button("Information", on_click=lambda: setattr(st.session_state, 'current_page', 'questions'))
         st.button("Weather", on_click=lambda: setattr(st.session_state, 'current_page', 'weather'))
         st.button("Planting Time", on_click=lambda: setattr(st.session_state, 'current_page', 'planting'))
-        st.button("Prediction", on_click=lambda: setattr(st.session_state, 'current_page', 'prediction'))
+        st.button("Rain Prediction", on_click=lambda: setattr(st.session_state, 'current_page', 'prediction'))
         st.button("Peste Alert", on_click=lambda: setattr(st.session_state, 'current_page', 'alert'))
         st.button("Help", on_click=lambda: setattr(st.session_state, 'current_page', 'help'))
         # st.button("Figma Welcome", on_click=lambda: setattr(st.session_state, 'current_page', 'figma_welcome'))
@@ -147,7 +147,7 @@ def welcome_page():
         create_card("Weather Outlook", "HarvestIQ provides farmers with accurate, real-time weather forecasts tailored to their specific locations. This feature analyzes meteorological data to deliver insights on temperature, humidity, wind patterns, and potential weather events, helping farmers make informed decisions about their daily activities.")
 
     with col2:
-        create_card("Best Planting Times", "HarvestIQ analyzes historical weather data to recommend the best planting times for various crops, helping farmers optimize their planting schedules and improve yields.")
+        create_card("Best Planting Times & Pest Alert", "HarvestIQ analyzes historical weather data to recommend the best planting times for various crops, helping farmers optimize their planting schedules and improve yields. Additionally, the pest alert feature notifies farmers of potential pest outbreaks in their area, allowing for timely interventions to protect crops and minimize damage.", is_active=True)
 
     with col3:
         create_card("Rain Prediction", "With advanced algorithms, HarvestIQ offers reliable rain predictions, alerting farmers to upcoming rainfall events. This feature enables proactive planning for irrigation, soil management, and harvesting activities, reducing risks associated with unexpected weather changes and enhancing overall productivity.")

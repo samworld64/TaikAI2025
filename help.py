@@ -9,12 +9,12 @@ def display_help(user_data=None, openai_api_key=None):
 
     with st.expander("🌱 What is HarvestIQ?"):
         st.write("""
-        HarvestIQ is an AI-powered smart agriculture advisor designed to support farmers with weather forecasts, rain predictions, and personalized crop recommendations.
+        HarvestIQ is an AI-powered smart agriculture assistant designed to support farmers with weather forecasts, rain predictions, and personalized crop recommendations.
         """)
 
     with st.expander("📝 How do I fill out the questionnaire?"):
         st.write("""
-        Go to the 'Fill Questionnaire' page from the sidebar and provide your personal and location information. This helps the AI give you tailored advice.
+        Go to the 'Information' page from the sidebar and provide your personal and location information. This helps the AI give you tailored advice.
         """)
 
     with st.expander("🌦️ How do I get weather information?"):

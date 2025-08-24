@@ -25,21 +25,26 @@ class HarvestIQAssistant:
         """
 
         if user_data.get('target') == 'weather':
-            prompt = f"Get the weather forecast for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole week. "
-            prompt += '''\nDetails to provide:\n- location\n- temperature\n- condition\n- humidity\n- wind_speed\n- forecast\n'''
-            prompt += "\nTask: Provide a detailed weather outlook for the user's area, including a weekly forecast and actionable insights for farmers."
-            prompt += "\nRestrict your sources to reliable weather and agricultural resources such as https://www.weather.com/, https://www.noaa.gov/, https://www.agriculture.com/"
+            prompt = f"Provide a realistic weather forecast for {user_data.get('location', 'the user area')} based on typical seasonal patterns. "
+            prompt += '''\nDetails to provide:\n- location\n- typical temperature range\n- expected weather conditions\n- humidity levels\n- wind patterns\n- 7-day forecast outlook\n'''
+            prompt += "\nTask: Provide a practical weather outlook for farmers in this area, including planting advice and agricultural recommendations based on typical weather patterns."
+            prompt += "\nNote: If you cannot access live data, provide typical seasonal information and farming advice for this region."
 
         elif user_data.get('target') == 'planting':
-            prompt = f"Get the best planting time for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. Provide for the whole year, starting from now. "
-            prompt += '''\nDetails to provide:\n- location\n- crops recommended\n- time recommended\n- weather forecast\n'''
-            prompt += "\nTask: Recommend optimal planting times and crops for the user's area, based on local climate and agricultural best practices."
-            prompt += "\nRestrict your sources to reliable agricultural resources such as https://www.agronomy.org/, https://www.cimmyt.org/, https://www.fao.org/"
+            prompt = f"Recommend the best planting times and crops for {user_data.get('location', 'the user area')} based on agricultural best practices. "
+            prompt += '''\nDetails to provide:\n- location\n- recommended crops for this region\n- optimal planting seasons\n- soil preparation advice\n- irrigation recommendations\n'''
+            prompt += "\nTask: Provide practical planting guidance for farmers in this area based on local climate conditions and agricultural expertise."
+
         elif user_data.get('target') == 'prediction':
-            prompt = f"Get the rain prediction for today for location: {user_data.get('location', '')} or latitude: {user_data.get('latitude', '')}, longitude: {user_data.get('longitude', '')}. "
-            prompt += '''\nDetails to provide:\n- location\n- chance_of_rain_today\n- amount_today\n- forecast_today\n- best_time_to_plant_today\n- best_time_to_avoid_today\n'''
-            prompt += "\nTask: Provide today's rain prediction and actionable advice for planting and farming activities."
-            prompt += "\nRestrict your sources to reliable meteorological and farming resources such as https://www.weather.gov/, https://www.climate.gov/, https://www.agweb.com/"
+            prompt = f"Provide rain prediction and farming advice for {user_data.get('location', 'the user area')} based on typical weather patterns. "
+            prompt += '''\nDetails to provide:\n- location\n- typical rainfall patterns\n- best times for planting activities\n- farming recommendations based on weather\n- soil moisture management\n'''
+            prompt += "\nTask: Offer practical rain prediction and agricultural advice for farmers in this region based on seasonal patterns."
+
+        elif user_data.get('target') == 'peste_alert':
+            prompt = f"if they are expreiancing peste burden, provide peste burden alert and give adiveces and suggestions how to mitigate it {user_data.get('location', 'the user area')} based on typical weather patterns. "
+            #prompt += '''\nDetails to provide:\n- location\n- current weather conditions\n- historical pest outbreak data\n- suggestions for pest control measures\n'''
+           # prompt += "\nTask: Provide actionable insights for managing pest outbreaks based on current weather conditions and historical data."
+            prompt += "\nNote: If the user is not experiencing any outbreaks, provide general pest management advice based on typical patterns."
 
         return prompt
 
@@ -50,7 +55,7 @@ class HarvestIQAssistant:
     def create_assistant(self):
         assistant = self.client.beta.assistants.create(
             name="HarvestIQ Agriculture Agent",
-            instructions="You are an expert in agriculture, weather forecasting, and farming practices. Your task is to provide farmers with accurate weather forecasts, planting recommendations, and agricultural advice based on their location and needs. Focus on practical, actionable insights for farming activities.",
+            instructions="You are an expert in agriculture, weather forecasting, and farming practices. Your task is to provide farmers with accurate weather forecasts, planting recommendations, give peste or disease alert related to the weather change in the location,  and agricultural advice based on their location and needs. Focus on practical, actionable insights for farming activities.",
             tools=[{"type": "retrieval"}],
             model="gpt-5-nano",
         )
@@ -160,10 +165,12 @@ class HarvestIQAssistant:
 
     def text_to_speech(self, text, voice):
         speech_file_path = Path("audio.mp3")
+        # Truncate text to 4000 characters to avoid OpenAI API limits
+        truncated_text = text[:4000] if len(text) > 4000 else text
         response = self.client.audio.speech.create(
             model="tts-1",
             voice=voice,
-            input=text
+            input=truncated_text
         )
         response.stream_to_file(speech_file_path)
 
